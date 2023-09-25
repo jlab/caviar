@@ -1,0 +1,10 @@
+*.log
+*.log.*
+
+.nextflow/
+
+results/
+
+report-*.html
+
+.vscode/

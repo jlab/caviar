@@ -1,0 +1,52 @@
+//TODO: the idbatran pipeline has an option -l for what i think are reads longer than 128, probaly our reads are longer (150) so maybe adjust this parameters
+// TODO: many assembler can use multiple seeds for kmers, shall i adjust this parameter or maybe run a kmer array?
+
+include { IdbaPipeline } from './assemblers/idba_pipeline.nf'
+include { ingapCdgPipeline } from './assemblers/ingap_cdg.nf'
+include { megahit } from './assemblers/megahit.nf'
+include { rnabloom } from './assemblers/rnabloom.nf'
+include { rnaspades } from './assemblers/rnaspades.nf'
+include { SoapDeNovoTransPipeline } from './assemblers/soapdenovotrans.nf'
+include { TransABySS } from './assemblers/transabyss.nf' 
+include { TransLiG } from './assemblers/translig.nf'
+include { Trinity } from './assemblers/trinity.nf' 
+include { CollectContigsForSample } from './functions/streamlining.nf'
+
+samples = [[
+        'M_D_PF_002c_S5',
+        '/vol/jlab/Analyses/metaTall/tmp/demultiplex/M_D_PF_002c_S5_R1_001.fastq.gz',
+        '/vol/jlab/Analyses/metaTall/tmp/demultiplex/M_D_PF_002c_S5_R2_001.fastq.gz'
+    ], [
+        'test',
+        '/vol/jlab/tlin/data/trinity_test_data_fq/reads.left.fq.gz',
+        '/vol/jlab/tlin/data/trinity_test_data_fq/reads.right.fq.gz'
+    ]
+]
+
+sample_channel = Channel.from(samples)
+workflow {
+    input_sample_channel = Channel.fromList(samples).flatMap(sample ->sample[0])
+    left_read_channel = Channel.fromList(samples).flatMap(sample ->sample[1])
+    right_read_channel = Channel.fromList(samples).flatMap(sample ->sample[2])
+    ASSEMBLE(left_read_channel, right_read_channel, input_sample_channel)
+}
+
+workflow ASSEMBLE {
+    take:
+    left_reads
+    right_reads
+    sampleName
+
+    main:
+    //this will run three assemblers
+    IdbaPipeline(left_reads, right_reads, sampleName)
+    ingapCdgPipeline(left_reads, right_reads, sampleName)
+    megahit(left_reads, right_reads, sampleName)
+    rnabloom(left_reads, right_reads, sampleName)
+    rnaspades(left_reads, right_reads, sampleName)
+    SoapDeNovoTransPipeline( left_reads, right_reads, sampleName )
+    TransABySS( left_reads, right_reads, sampleName )
+    //not paralized 😣
+    TransLiG( left_reads, right_reads, sampleName )
+    Trinity( left_reads, right_reads, sampleName )
+ }
