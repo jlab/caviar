@@ -1,4 +1,6 @@
 process TrimmomaticPE {
+    cpus = 10
+    memory = '10G'
 
     input:
     tuple val(sample), path(r1), path(r2)
@@ -9,9 +11,9 @@ process TrimmomaticPE {
 
     script:
     """
-    trimmomatic PE -threads 12 $r1 $r2 \
-    \${r1.baseName}_Paired.fastq.gz \${r1.baseName}_Unpaired.fastq.gz \
-    \${r2.baseName}_Paired.fastq.gz \${r2.baseName}_Unpaired.fastq.gz \
+    trimmomatic PE -threads ${task.cpus} $r1 $r2 \
+    ${r1.baseName}_Paired.fastq.gz ${r1.baseName}_Unpaired.fastq.gz \
+    ${r2.baseName}_Paired.fastq.gz ${r2.baseName}_Unpaired.fastq.gz \
     ILLUMINACLIP:/usr/share/trimmomatic/TruSeq3-PE-2.fa:2:30:10
     """
 }

@@ -14,13 +14,29 @@ include { TransLiG } from './assemblers/translig.nf'
 include { Trinity } from './assemblers/trinity.nf' 
 include { CollectContigsForSample } from './functions/streamlining.nf'
 include { TrimmomaticPE } from './preprocess/trimmomatic.nf'
+include { Bowtie2Align; Bowtie2Build } from './preprocess/bowtie.nf'
+include { SORTMERNA } from './preprocess/sortmerna.nf' 
+include { PLOT_ALIGNMENT_RATES } from './functions/plotting.nf'
 
 //sample_dir = '/vol/jlab/Analyses/metaTall/tmp/demultiplex/'
-sample_dir = '/vol/jlab/Analyses/metaTall/tmp/demultiplex/test/'
+sample_dir = '/vol/jlab/tlin/all_project/fastq/rna'
+reference = Channel.fromPath('/vol/jlab/tlin/all_project/references/ncbi_GRCH38/GRCh38_latest_genomic.fna')
+rrna_databse = Channel.fromPath('/vol/jlab/tlin/all_project/references/no_backup/rrna_db/smr_v4.3_default_db.fasta')
 
 workflow {
-    ch = Channel.fromFilePairs("data/*_R{1,2}.dat").map{tuple -> [tuple[0], tuple[1].sort()].flatten()}.view()
-    TrimmomaticPE(samples)
+    ch = Channel.fromFilePairs("${sample_dir}/*_R{1,2}_001.fastq.gz").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
+    Bowtie2Build(reference)
+    Bowtie2Align(ch, Bowtie2Build.out)
+    Bowtie2Align.out.view().map { s, file -> 
+        def content = file.text.trim()
+        tuple(s, content)
+    }.collect().set { alignment_rates_bowie }
+    PLOT_ALIGNMENT_RATES(alignment_rates_bowie)
+    //SORTMERNA(ch, rrna_databse)
+
+    //works
+    //TrimmomaticPE(ch)
+
     """
     sample_channel = Channel.fromList(samples)
     input_sample_channel = Channel.fromList(samples).flatMap(sample ->sample[0])
@@ -32,10 +48,7 @@ workflow {
 
 
 workflow ASSEMBLE {
-    take:
-    left_reads
-    right_reads
-    sampleName
+    tuple val(sample), path(left_reads), path(right_reads)
 
     main:
     //this will run three assemblers
