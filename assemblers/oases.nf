@@ -10,7 +10,7 @@ workflow OasesPipeline {
 
 process Velveth {
     input:
-    tuple val(sample), path(leftreads), path(rightreads)
+    tuple val(sample), path(reads_left), path(reads_right)
 
     output:
     tuple val(sample), path("Assem")
@@ -47,8 +47,8 @@ process Oases {
 
     script:
     """
-    /vol/jlab/tlin/software/assemblers/oases/oases $assem_g_dir
+    /vol/jlab/tlin/software/assemblers/oases/oases $assem_dir
     mv Assem/transcripts.fa oases_contigs.fa
-    mv Assem/contigs.fa.fa velvet_contigs.fa
+    mv Assem/contigs.fa velvet_contigs.fa
     """
 }

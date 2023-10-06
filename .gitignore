@@ -8,3 +8,4 @@ results/
 report-*.html
 
 .vscode/
+RScripts/.Rhistory

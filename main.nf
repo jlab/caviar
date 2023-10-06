@@ -17,14 +17,20 @@ include { TrimmomaticPE } from './preprocess/trimmomatic.nf'
 include { Bowtie2Align; Bowtie2Build } from './preprocess/bowtie.nf'
 include { SORTMERNA } from './preprocess/sortmerna.nf' 
 include { PLOT_ALIGNMENT_RATES } from './functions/plotting.nf'
+include { OasesPipeline } from './assemblers/oases.nf'
 
 //sample_dir = '/vol/jlab/Analyses/metaTall/tmp/demultiplex/'
-sample_dir = '/vol/jlab/tlin/all_project/fastq/rna'
+sample_dir = '/vol/jlab/tlin/all_project/fastq/subset_rna/'
 reference = Channel.fromPath('/vol/jlab/tlin/all_project/references/ncbi_GRCH38/GRCh38_latest_genomic.fna')
 rrna_databse = Channel.fromPath('/vol/jlab/tlin/all_project/references/no_backup/rrna_db/smr_v4.3_default_db.fasta')
 
 workflow {
-    ch = Channel.fromFilePairs("${sample_dir}/*_R{1,2}_001.fastq.gz").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
+    ch = Channel.fromFilePairs("${sample_dir}/*_R{1,2}_001_subset.fastq.gz").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
+    OasesPipeline(ch)
+    
+
+    """
+    //works
     Bowtie2Build(reference)
     Bowtie2Align(ch, Bowtie2Build.out)
     Bowtie2Align.out.view().map { s, file -> 
@@ -32,8 +38,8 @@ workflow {
         tuple(s, content)
     }.collect().set { alignment_rates_bowie }
     PLOT_ALIGNMENT_RATES(alignment_rates_bowie)
-    //SORTMERNA(ch, rrna_databse)
-
+    """
+ 
     //works
     //TrimmomaticPE(ch)
 
