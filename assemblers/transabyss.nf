@@ -2,9 +2,7 @@ process TransABySS {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path reads_left
-    path reads_right
-    val sampleName
+    tuple val(sampleName), path(reads_left), path(reads_right)
 
     output:
     path "transabyss_contigs.fa", emit: contig

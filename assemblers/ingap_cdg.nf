@@ -2,14 +2,13 @@ include { UnzipReads; MergeAndConvert } from './idba_ud.nf'
  
 workflow ingapCdgPipeline {
     take:
-    left_reads
-    right_reads
-    sampleName
+    triplet
 
     main:
-    UnzipReads( left_reads, right_reads )
-    MergeAndConvert( UnzipReads.out.left_unzipped, UnzipReads.out.right_unzipped )
-    ingapCdg( MergeAndConvert.out.merged_fa, sampleName )
+    //these processes need to take tuples
+    UnzipReads( triplet )
+    MergeAndConvert( UnzipReads.out )
+    ingapCdg( MergeAndConvert.out )
 
 }
 
@@ -17,8 +16,7 @@ process ingapCdg {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path merged_fa
-    val sampleName
+    tuple val(sampleName), path(merged_fa)
 
     output:
     path "ingap-cdg_contigs.fa", emit: contigs

@@ -2,22 +2,19 @@ include { UnzipReads } from './idba_ud.nf'
 
 workflow SoapDeNovoTransPipeline {
     take:
-    left_reads
-    right_reads
-    sampleName
+    triplet
     
     main:
-    UnzipReads( left_reads, right_reads)
-    CreateSOAPdenovoConfig( UnzipReads.out.left_unzipped, UnzipReads.out.right_unzipped )
-    SOAPdenovoTrans( CreateSOAPdenovoConfig.out.config, sampleName )
+    UnzipReads( triplet)
+    CreateSOAPdenovoConfig( triplet )
+    SOAPdenovoTrans( CreateSOAPdenovoConfig.out )
 }
 
 process SOAPdenovoTrans {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path soap_config
-    val sampleName
+    tuple val(sampleName), path(soap_config)
 
     output:
     path "soap-denovo-trans_contigs.fa", emit: contigs
@@ -37,11 +34,11 @@ process CreateSOAPdenovoConfig {
     memory = '1G'
 
     input:
-    val left_reads
-    val right_reads
+    tuple val(sample), path(left_reads), path(right_reads)
+
 
     output:
-    path "soap.config", emit: config
+    tuple val(sample), path("soap.config")
 
     script:
     """

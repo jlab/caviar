@@ -3,10 +3,8 @@ process megahit {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path left_reads
-    path right_reads
-    val sampleName
-
+    tuple val(sampleName), path(left_reads), path(right_reads)
+    
     output:
     path "megahit_contigs.fa", emit: contigs
 

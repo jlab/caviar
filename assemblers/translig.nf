@@ -3,9 +3,7 @@ process TransLiG {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path reads_left
-    path reads_right
-    val sampleName
+    tuple val(sampleName), path(reads_left), path(reads_right)
 
     output:
     path "trans-lig_contigs.fa", emit: contigs

@@ -26,8 +26,7 @@ rrna_databse = Channel.fromPath('/vol/jlab/tlin/all_project/references/no_backup
 
 workflow {
     ch = Channel.fromFilePairs("${sample_dir}/*_R{1,2}_001_subset.fastq.gz").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
-    OasesPipeline(ch)
-    
+    ASSEMBLE(ch)
 
     """
     //works
@@ -42,32 +41,24 @@ workflow {
  
     //works
     //TrimmomaticPE(ch)
-
-    """
-    sample_channel = Channel.fromList(samples)
-    input_sample_channel = Channel.fromList(samples).flatMap(sample ->sample[0])
-    left_read_channel = Channel.fromList(samples).flatMap(sample ->sample[1])
-    right_read_channel = Channel.fromList(samples).flatMap(sample ->sample[2])
-    ASSEMBLE(left_read_channel, right_read_channel, input_sample_channel)
-    """
 }
 
 
 workflow ASSEMBLE {
-    tuple val(sample), path(left_reads), path(right_reads)
+    take:
+    triplet
 
     main:
-    //this will run three assemblers
-    IdbaPipeline(left_reads, right_reads, sampleName)
-    """
-    ingapCdgPipeline(left_reads, right_reads, sampleName)
-    megahit(left_reads, right_reads, sampleName)
-    rnabloom(left_reads, right_reads, sampleName)
-    rnaspades(left_reads, right_reads, sampleName)
-    SoapDeNovoTransPipeline( left_reads, right_reads, sampleName )
-    TransABySS( left_reads, right_reads, sampleName )
+    //this will run three assemblers needs to fix: 
+    //IdbaPipeline(left_reads, right_reads, sampleName)
+    megahit(triplet)
+    OasesPipeline(triplet)
+    ingapCdgPipeline(triplet)
+    rnabloom(triplet)
+    rnaspades(triplet)
+    SoapDeNovoTransPipeline(triplet)
+    TransABySS(triplet)
     //not paralized 😣
-    TransLiG( left_reads, right_reads, sampleName )
-    Trinity( left_reads, right_reads, sampleName )
-    """
+    TransLiG(triplet)
+    Trinity(triplet)
  }

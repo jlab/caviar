@@ -12,7 +12,7 @@ process SORTMERNA {
 
     input:
     tuple val(meta), path(reads)
-    path  fastas
+    path fastas
 
     output:
     tuple val(meta), path("*.fastq.gz"), emit: reads

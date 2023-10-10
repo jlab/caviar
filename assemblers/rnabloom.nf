@@ -3,9 +3,7 @@ process rnabloom {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path left_reads
-    path right_reads
-    val sampleName
+    tuple val(sample), path(left_reads), path(reads_right)
 
     output:
     path "rnabloom_contigs.fa", emit: contigs

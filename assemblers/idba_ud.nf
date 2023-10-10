@@ -17,17 +17,15 @@ process UnzipReads {
     memory = '2G'
 
     input:
-    path left_reads_gz
-    path right_reads_gz
+    tuple val(sample), path(reads_left), path(reads_right)
 
     output:
-    path "left_reads.fq", emit: left_unzipped
-    path "right_reads.fq", emit: right_unzipped
+    tuple val(sample), path("left_reads.fq"), path("right_reads.fq")
 
     script:
     """
-    gunzip -c $left_reads_gz > left_reads.fq
-    gunzip -c $right_reads_gz > right_reads.fq
+    gunzip -c $reads_left > left_reads.fq
+    gunzip -c $reads_right > right_reads.fq
     """
 }
 
@@ -37,12 +35,11 @@ process MergeAndConvert {
     memory = '1G'
 
     input:
-    path left_reads
-    path right_reads
+    tuple val(sample), path(reads_left), path(reads_right)
 
     output:
-    path "merged.fa", emit: merged_fa
-
+    tuplee val(sample), path("merged.fa")
+    
     script:
 //TODO: for deployment with container change path
     """

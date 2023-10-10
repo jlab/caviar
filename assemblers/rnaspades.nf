@@ -2,9 +2,7 @@ process rnaspades {
     publishDir "results/assembler/$sampleName", mode: 'copy'
 
     input:
-    path reads_left
-    path reads_right
-    val sampleName
+    tuple val(sample), path(reads_left), path(reads_right)
 
     output:
     path "rnaspades_contigs.fa", emit: contigs
