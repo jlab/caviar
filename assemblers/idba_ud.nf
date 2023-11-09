@@ -13,6 +13,8 @@ workflow IdbaUdPipeline {
 }
 
 process UnzipReads {
+    tag "$sample"
+
     cpus = 2
     memory = '2G'
 
@@ -31,15 +33,17 @@ process UnzipReads {
 
 
 process MergeAndConvert {
+    tag "$sample"
+
     cpus = 1
     memory = '1G'
 
     input:
-    tuple val(sample), path(reads_left), path(reads_right)
+    tuple val(sample), path(left_reads), path(right_reads)
 
     output:
-    tuplee val(sample), path("merged.fa")
-    
+    tuple val(sample), path("merged.fa")
+
     script:
 //TODO: for deployment with container change path
     """
@@ -48,14 +52,13 @@ process MergeAndConvert {
 }
 
 process IDBA_UD {
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    path merged_fa
-    val sampleName
+    tuple val(sample), path(merged_fa)
 
     output:
-    path "idba_ud_contigs.fa", emit: idba_ud_results
+    tuple val(sample), path("idba_ud_contigs.fa")
 
     script:
     """

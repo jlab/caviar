@@ -1,9 +1,10 @@
 process megahit {
+    tag "$sample"
 
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    tuple val(sampleName), path(left_reads), path(right_reads)
+    tuple val(sample), path(left_reads), path(right_reads)
     
     output:
     path "megahit_contigs.fa", emit: contigs

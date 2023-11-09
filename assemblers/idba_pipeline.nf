@@ -4,16 +4,16 @@ include { IDBA_TRAN } from './idba_tran.nf'
 
 workflow IdbaPipeline {
     take:
-    left_reads
-    right_reads
-    sampleName
+    triplet
 
     main:
-    UnzipReads( left_reads, right_reads )
-    MergeAndConvert( UnzipReads.out.left_unzipped, UnzipReads.out.right_unzipped )
-    IDBA_UD( MergeAndConvert.out.merged_fa, sampleName )
-    ConvertToFASTA( UnzipReads.out.left_unzipped, UnzipReads.out.right_unzipped )
-    IDBA_MT( ConvertToFASTA.out.left_fasta, ConvertToFASTA.out.right_fasta, MergeAndConvert.out.merged_fa, sampleName )
-    IDBA_TRAN(  MergeAndConvert.out.merged_fa, sampleName )
+    UnzipReads( triplet )
+    MergeAndConvert( UnzipReads.out )
+    //IDBA_UD( MergeAndConvert.out )
+    IDBA_TRAN(  MergeAndConvert.out )
+
+    ConvertToFASTA( UnzipReads.out )
+
+    IDBA_MT( IDBA_TRAN.out.join(ConvertToFASTA.out))
     
 }

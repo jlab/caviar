@@ -20,12 +20,15 @@ include { PLOT_ALIGNMENT_RATES } from './functions/plotting.nf'
 include { OasesPipeline } from './assemblers/oases.nf'
 
 //sample_dir = '/vol/jlab/Analyses/metaTall/tmp/demultiplex/'
-sample_dir = '/vol/jlab/tlin/all_project/fastq/subset_rna/'
+//sample_dir = '/vol/jlab/tlin/all_project/fastq/subset_rna/'
+//sample_dir = '/homes/tlin/Projects/jlab-mtpreprocess/result/sortmerna/'
+sample_dir = params.sample_dir
 reference = Channel.fromPath('/vol/jlab/tlin/all_project/references/ncbi_GRCH38/GRCh38_latest_genomic.fna')
 rrna_databse = Channel.fromPath('/vol/jlab/tlin/all_project/references/no_backup/rrna_db/smr_v4.3_default_db.fasta')
-
+print(sample_dir)
+print(params.pattern)
 workflow {
-    ch = Channel.fromFilePairs("${sample_dir}/*_R{1,2}_001_subset.fastq.gz").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
+    ch = Channel.fromFilePairs("${sample_dir}/${params.pattern}").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
     ASSEMBLE(ch)
 
     """
@@ -36,7 +39,8 @@ workflow {
         def content = file.text.trim()
         tuple(s, content)
     }.collect().set { alignment_rates_bowie }
-    PLOT_ALIGNMENT_RATES(alignment_rates_bowie)
+    PLOT_ALIGNMENT_RATES(alignme   Otherwise, names are kept untouched in the given output directory.
+nt_rates_bowie)
     """
  
     //works
@@ -49,8 +53,7 @@ workflow ASSEMBLE {
     triplet
 
     main:
-    //this will run three assemblers needs to fix: 
-    //IdbaPipeline(left_reads, right_reads, sampleName)
+    IdbaPipeline(triplet) //idba_ud doesnt work
     megahit(triplet)
     OasesPipeline(triplet)
     ingapCdgPipeline(triplet)
@@ -58,7 +61,7 @@ workflow ASSEMBLE {
     rnaspades(triplet)
     SoapDeNovoTransPipeline(triplet)
     TransABySS(triplet)
-    //not paralized 😣
     TransLiG(triplet)
     Trinity(triplet)
+
  }

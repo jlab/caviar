@@ -1,9 +1,10 @@
 process TransLiG {
+    tag "$sample"
 
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    tuple val(sampleName), path(reads_left), path(reads_right)
+    tuple val(sample), path(reads_left), path(reads_right)
 
     output:
     path "trans-lig_contigs.fa", emit: contigs

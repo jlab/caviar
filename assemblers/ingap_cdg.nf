@@ -13,10 +13,12 @@ workflow ingapCdgPipeline {
 }
 
 process ingapCdg {
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    tag "$sample"
+
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    tuple val(sampleName), path(merged_fa)
+    tuple val(sample), path(merged_fa)
 
     output:
     path "ingap-cdg_contigs.fa", emit: contigs

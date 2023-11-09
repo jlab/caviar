@@ -1,9 +1,10 @@
 process rnabloom {
+    tag "$sample"
 
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    tuple val(sample), path(left_reads), path(reads_right)
+    tuple val(sample), path(left_reads), path(right_reads)
 
     output:
     path "rnabloom_contigs.fa", emit: contigs

@@ -19,16 +19,16 @@ workflow IdbaUdMTPipeline {
 
 
 process ConvertToFASTA {
+    tag "$sample"
+
     cpus = 1
     memory = '1G'
 
     input:
-    path left_reads
-    path right_reads
+    tuple val(sample), path(left_reads), path(right_reads)
 
     output:
-    path "left_reads.fa", emit: left_fasta
-    path "right_reads.fa", emit: right_fasta
+    tuple val(sample), path("left_reads.fa"), path("right_reads.fa")
 
     script:
     """
@@ -38,13 +38,12 @@ process ConvertToFASTA {
 }
 
 process IDBA_MT {
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    tag "$sample"
+
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    path left_fasta
-    path right_fasta
-    path hard_filtered_transcripts
-    val sampleName
+    tuple val(sample), path(hard_filtered_transcripts), path(left_fasta), path(right_fasta)
 
     output:
     path "idba_mt_contigs.fa", emit: contigs

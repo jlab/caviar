@@ -9,6 +9,8 @@ workflow OasesPipeline {
 }
 
 process Velveth {
+    tag "$sample"
+
     input:
     tuple val(sample), path(reads_left), path(reads_right)
 
@@ -23,6 +25,9 @@ process Velveth {
 
 //TODO: check whether the contig is already the final velvet output 
 process Velvetg {
+    tag "$sample"
+
+
     input:
     tuple val(sample), path(assem_dir)
 
@@ -36,6 +41,9 @@ process Velvetg {
 }
 
 process Oases {
+    tag "$sample"
+
+
     publishDir "results/assembler/${sample}", mode: 'copy'
 
     input:

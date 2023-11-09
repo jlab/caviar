@@ -1,5 +1,7 @@
 process rnaspades {
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    tag "$sample"
+
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(reads_left), path(reads_right)

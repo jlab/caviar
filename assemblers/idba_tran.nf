@@ -15,18 +15,19 @@ workflow IdbaTranPipeline {
 }
 
 process IDBA_TRAN {
-    publishDir "results/assembler/$sampleName", mode: 'copy'
+    tag "$sample"
+
+    publishDir "results/assembler/$sample", mode: 'copy'
 
     input:
-    path merged_fa
-    val sampleName
+    tuple val(sample), path(merged_fa)
 
     output:
-    path "ibda_tran_contigs.fa", emit: contigs
+    tuple val(sample), path("ibda_tran_contigs.fa")
 
     script:
     """
-    idba_tran -l $merged_fa -o idba_tran_results
+    idba_tran -l $merged_fa -o idba_tran_results --num_threads ${task.cpus}
     mv idba_tran_results/contig.fa ibda_tran_contigs.fa
     """
 }
