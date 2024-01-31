@@ -1,5 +1,7 @@
 *.log
 *.log.*
+work/
+graph*
 
 .nextflow/
 
