@@ -52,7 +52,7 @@ process MergeAndConvert {
 }
 
 process IDBA_UD {
-    publishDir "results/assembler/$sample", mode: 'copy'
+    publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(merged_fa)

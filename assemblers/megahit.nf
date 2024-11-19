@@ -1,7 +1,7 @@
 process megahit {
     tag "$sample"
 
-    publishDir "results/assembler/$sample", mode: 'copy'
+    publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(left_reads), path(right_reads)

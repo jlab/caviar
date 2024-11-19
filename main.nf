@@ -18,6 +18,7 @@ include { Bowtie2Align; Bowtie2Build } from './preprocess/bowtie.nf'
 include { SORTMERNA } from './preprocess/sortmerna.nf' 
 include { PLOT_ALIGNMENT_RATES } from './functions/plotting.nf'
 include { OasesPipeline } from './assemblers/oases.nf'
+include { DBG } from './assemblers/dbg.nf'
 
 //sample_dir = '/vol/jlab/Analyses/metaTall/tmp/demultiplex/'
 //sample_dir = '/vol/jlab/tlin/all_project/fastq/subset_rna/'
@@ -63,5 +64,6 @@ workflow ASSEMBLE {
     TransABySS(triplet)
     TransLiG(triplet)
     Trinity(triplet)
+    DBG(triplet)
 
  }

@@ -40,7 +40,7 @@ process ConvertToFASTA {
 process IDBA_MT {
     tag "$sample"
 
-    publishDir "results/assembler/$sample", mode: 'copy'
+    publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(hard_filtered_transcripts), path(left_fasta), path(right_fasta)

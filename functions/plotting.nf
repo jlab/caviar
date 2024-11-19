@@ -1,7 +1,7 @@
 
 
 process PLOT_ALIGNMENT_RATES {
-    publishDir "results/plots", mode: 'copy'
+    publishDir "${params.result_dir}/plots", mode: 'copy'
 
     input:
     val flatList

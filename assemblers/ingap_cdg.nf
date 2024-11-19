@@ -15,7 +15,7 @@ workflow ingapCdgPipeline {
 process ingapCdg {
     tag "$sample"
 
-    publishDir "results/assembler/$sample", mode: 'copy'
+    publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(merged_fa)
@@ -26,7 +26,7 @@ process ingapCdg {
     //Todo threads can be doubled
     script:
     """
-    ingap-cdg -i $merged_fa -o ingap_cdg_results -n ${task.cpus}
+    /vol/jlab/tlin/software/ass_links/ingap-cdg -i $merged_fa -o ingap_cdg_results -n ${task.cpus}
     mv ingap_cdg_results/OutputCDSs/cds.nuc.fas ingap-cdg_contigs.fa
     """
 }

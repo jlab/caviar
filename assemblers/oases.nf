@@ -44,7 +44,7 @@ process Oases {
     tag "$sample"
 
 
-    publishDir "results/assembler/${sample}", mode: 'copy'
+    publishDir "${params.result_dir}/assembler/${sample}", mode: 'copy'
 
     input:
     tuple val(sample), path(assem_dir)

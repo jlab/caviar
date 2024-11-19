@@ -17,7 +17,7 @@ workflow IdbaTranPipeline {
 process IDBA_TRAN {
     tag "$sample"
 
-    publishDir "results/assembler/$sample", mode: 'copy'
+    publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(merged_fa)
