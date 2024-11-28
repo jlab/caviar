@@ -12,6 +12,7 @@ process DBG {
 
     output:
     path "*.fa"      , emit: contigs
+    path "*.gfa"        , emit: graph
     path "versions.yml"           , emit: versions
 
     when:
@@ -33,6 +34,9 @@ process DBG {
         --paths \\
         --threads ${task.cpus} \\
         ${args}  
+    
+    mv dbg_out.fasta ${prefix}.fa
+    mv dbg_out.gfa ${prefix}.gfa
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
