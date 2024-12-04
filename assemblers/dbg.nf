@@ -11,8 +11,8 @@ process DBG {
     tuple val(sample), path(reads_left), path(reads_right)
 
     output:
-    path "*.fa"      , emit: contigs
-    path "*.gfa"        , emit: graph
+    path "dbg_contigs.fa"         , emit: contigs
+    path "dbg_graph.gfa"        , emit: graph
     path "versions.yml"           , emit: versions
 
     when:
@@ -35,8 +35,10 @@ process DBG {
         --threads ${task.cpus} \\
         ${args}  
     
-    mv dbg_out.fasta ${prefix}.fa
-    mv dbg_out.gfa ${prefix}.gfa
+    mv dbg_out.fasta dbg_contigs.fa
+    sed -i "s/ //g" dbg_contigs.fa
+
+    mv dbg_out.gfa dbg_graph.gfa
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
