@@ -6,8 +6,16 @@ workflow SoapDeNovoTransPipeline {
     
     main:
     UnzipReads( triplet)
+    triplet.combine(
+        Channel.of([params.])
+    )
+    
     CreateSOAPdenovoConfig( UnzipReads.out )
-    SOAPdenovoTrans( CreateSOAPdenovoConfig.out )
+    CreateSOAPdenovoConfig.out.join(
+        Channel.of(params.read_length, params.insert_size)
+    ).set { soap_config }
+
+    SOAPdenovoTrans( soap_config )
 }
 
 process SOAPdenovoTrans {
@@ -38,7 +46,7 @@ process CreateSOAPdenovoConfig {
     memory = '1G'
 
     input:
-    tuple val(sample), path(left_reads), path(right_reads)
+    tuple val(sample), path(left_reads), path(right_reads), val(read_length), val(insert_size)
 
 
     output:
@@ -47,18 +55,18 @@ process CreateSOAPdenovoConfig {
     script:
     """
     echo "#maximal read length" > soap.config
-    echo "max_rd_len=300" >> soap.config
+    echo "max_rd_len=${read_length}" >> soap.config
     echo "[LIB]" >> soap.config
     echo "#maximal read length in this lib" >> soap.config
-    echo "rd_len_cutof=300" >> soap.config
+    echo "rd_len_cutof=${read_length}" >> soap.config
     echo "#average insert size" >> soap.config
-    echo "avg_ins=190" >> soap.config
+    echo "avg_ins=${insert_size}" >> soap.config
     echo "#if sequence needs to be reversed" >> soap.config
     echo "reverse_seq=0" >> soap.config
     echo "#in which part(s) the reads are used" >> soap.config
     echo "asm_flags=3" >> soap.config
     echo "#minimum aligned length to contigs for a reliable read location (at least 32 for short insert size)" >> soap.config
-    echo "map_len=64" >> soap.config
+    echo "map_len=32" >> soap.config
     echo "#fastq file for read 1" >> soap.config
     echo "q1=$left_reads" >> soap.config
     echo "#fastq file for read 2" >> soap.config

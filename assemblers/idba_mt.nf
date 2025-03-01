@@ -43,7 +43,7 @@ process IDBA_MT {
     publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
-    tuple val(sample), path(hard_filtered_transcripts), path(left_fasta), path(right_fasta)
+    tuple val(sample), path(hard_filtered_transcripts), path(left_fasta), path(right_fasta), val(read_length), val(insert_size)
 
     output:
     path "idba_mt_contigs.fa", emit: contigs
@@ -53,6 +53,8 @@ process IDBA_MT {
     idba-mt \\
         -t $left_fasta \\
         -f $right_fasta \\
+        -r ${read_length} \\
+        -r ${insert_size} \\
         -c $hard_filtered_transcripts \\
         -O idba_mt_contigs.fa
     """
