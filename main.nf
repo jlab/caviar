@@ -54,16 +54,15 @@ workflow ASSEMBLE {
     triplet
 
     main:
+    DBG(triplet)
     rnaspades(triplet)
     megahit(triplet)
-    DBG(triplet)
     IdbaPipeline(triplet) //idba_ud doesnt work
     OasesPipeline(triplet)
-    ingapCdgPipeline(triplet)
-    rnabloom(triplet)
+    //ingapCdgPipeline(triplet)
+    //rnabloom(triplet)
     SoapDeNovoTransPipeline(triplet)
     TransABySS(triplet)
-    TransLiG(triplet)
+    //TransLiG(triplet) -
     Trinity(triplet)
-
  }

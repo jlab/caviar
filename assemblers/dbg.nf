@@ -28,14 +28,14 @@ process DBG {
         -t test test \\
         -r ${task.memory.toGiga()} \\
         -g \\
-        -k kmer64 \\
+        -k kmer32 \\
         --format gfa \\
         -p \\
         --paths \\
         --threads ${task.cpus} \\
         ${args}  
     
-    mv dbg_out.fasta dbg_contigs.fa
+    mv dbg_out.paths.fasta dbg_contigs.fa
     sed -i "s/ //g" dbg_contigs.fa
 
     mv dbg_out.gfa dbg_graph.gfa
