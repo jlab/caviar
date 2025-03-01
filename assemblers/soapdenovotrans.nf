@@ -5,17 +5,15 @@ workflow SoapDeNovoTransPipeline {
     triplet
     
     main:
-    UnzipReads( triplet)
-    triplet.combine(
-        Channel.of([params.])
-    )
-    
-    CreateSOAPdenovoConfig( UnzipReads.out )
-    CreateSOAPdenovoConfig.out.join(
+    UnzipReads( triplet )
+    UnzipReads.out.join(
         Channel.of(params.read_length, params.insert_size)
-    ).set { soap_config }
+    ).set { soap_data }
 
-    SOAPdenovoTrans( soap_config )
+    CreateSOAPdenovoConfig( soap_data )
+
+
+    SOAPdenovoTrans( CreateSOAPdenovoConfig.out )
 }
 
 process SOAPdenovoTrans {
