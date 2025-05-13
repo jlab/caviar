@@ -12,8 +12,10 @@ process DBG {
 
     output:
     path "dbg_contigs.fa"         , emit: contigs
-    path "dbg_graph.gfa"        , emit: graph
+    path "dbg_graph.gfa"          , emit: graph
     path "versions.yml"           , emit: versions
+    path(time_log_fl)             , emit: time_log
+
 
     when:
     task.ext.when == null || task.ext.when
@@ -21,10 +23,12 @@ process DBG {
     script:
     def args = task.ext.args ?: ''
     prefix = task.ext.prefix ?: "${sample}"
+    process_name = "DBG"
+    time_log_fl = "${sample}_dbg_time_log.txt"
 
     //TODO Should -g and kmer be a parameter for config in args?
     """
-    /homes/tlin/software/bin/dbg -i ${reads_left} ${reads_right}  \\
+    /usr/bin/time -v /homes/tlin/software/bin/dbg -i ${reads_left} ${reads_right}  \\
         -t test test \\
         -r ${task.memory.toGiga()} \\
         -g \\
@@ -33,7 +37,10 @@ process DBG {
         -p \\
         --paths \\
         --threads ${task.cpus} \\
-        ${args}  
+        ${args}  2> $time_log_fl
+
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
     
     mv dbg_out.paths.fasta dbg_contigs.fa
     sed -i "s/ //g" dbg_contigs.fa

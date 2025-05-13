@@ -6,8 +6,10 @@ workflow SoapDeNovoTransPipeline {
     
     main:
     UnzipReads( triplet )
-    UnzipReads.out.join(
-        Channel.of(params.read_length, params.insert_size)
+    UnzipReads.out.unzipped.combine(
+        Channel.of(params.read_length)
+    ).combine(
+       Channel.of(params.insert_size)
     ).set { soap_data }
 
     CreateSOAPdenovoConfig( soap_data )
@@ -25,14 +27,21 @@ process SOAPdenovoTrans {
     tuple val(sample), path(soap_config), path(left_reads), path(right_reads)
 
     output:
-    path "soap-denovo-trans_contigs.fa", emit: contigs
+    path "soap-denovo-trans_contigs.fa"     , emit: contigs
+    path(time_log_fl)                       , emit: time_log
 
     script:
+    process_name = "SOAPdenovoTrans"
+    time_log_fl = "${sample}_soap_denovo_trans_time_log.txt"
+    
     """
     OUTDIR=soapdenovo_trans_results
     mkdir \$OUTDIR
     SOAPdenovo-Trans-127mer all -s $soap_config -o \${OUTDIR}/soap_denovo_trans -p ${task.cpus}
     mv soapdenovo_trans_results/soap_denovo_trans.contig soap-denovo-trans_contigs.fa
+
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
     """
 }
 
@@ -48,7 +57,7 @@ process CreateSOAPdenovoConfig {
 
 
     output:
-    tuple val(sample), path("soap.config"), path(left_reads), path(right_reads)
+    tuple val(sample), path("soap.config"), path(left_reads), path(right_reads) 
 
     script:
     """

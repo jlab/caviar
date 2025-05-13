@@ -22,12 +22,22 @@ process UnzipReads {
     tuple val(sample), path(reads_left), path(reads_right)
 
     output:
-    tuple val(sample), path("left_reads.fq"), path("right_reads.fq")
+    tuple val(sample), path("left_reads.fq"), path("right_reads.fq"), emit: unzipped
+    path(time_log_fl)                                               , emit: time_log
+
 
     script:
+    process_name = "UnzipReads"
+    time_log_fl = "${sample}_unzip_reads_time_log.txt"
+
     """
-    gunzip -c $reads_left > left_reads.fq
-    gunzip -c $reads_right > right_reads.fq
+    /usr/bin/time -v bash -c '
+    gunzip -c "\$0" > left_reads.fq
+    gunzip -c "\$1" > right_reads.fq
+    ' bash $reads_left $reads_right 2> $time_log_fl
+
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
     """
 }
 
@@ -42,12 +52,18 @@ process MergeAndConvert {
     tuple val(sample), path(left_reads), path(right_reads)
 
     output:
-    tuple val(sample), path("merged.fa")
+    tuple val(sample), path("merged.fa")                    , emit: merged
+    path(time_log_fl)                                       , emit: time_log
 
     script:
+    process_name = "MergeAndConvert"
+    time_log_fl = "${sample}_merge_and_convert_time_log.txt"
 //TODO: for deployment with container change path
     """
-    /vol/jlab/tlin/software/assemblers/idba/bin/fq2fa --merge $left_reads $right_reads merged.fa
+    /usr/bin/time -v /vol/jlab/tlin/software/assemblers/idba/bin/fq2fa --merge $left_reads $right_reads merged.fa 2> $time_log_fl
+    
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
     """
 }
 

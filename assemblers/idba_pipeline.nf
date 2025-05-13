@@ -9,15 +9,17 @@ workflow IdbaPipeline {
     main:
 
     UnzipReads( triplet )
-    MergeAndConvert( UnzipReads.out )
+    MergeAndConvert( UnzipReads.out.unzipped )
     //IDBA_UD( MergeAndConvert.out )
-    IDBA_TRAN(  MergeAndConvert.out )
+    IDBA_TRAN(  MergeAndConvert.out.merged )
 
-    ConvertToFASTA( UnzipReads.out )
-    IDBA_TRAN.out.join(
-        ConvertToFASTA.out
+    ConvertToFASTA( UnzipReads.out.unzipped )
+    IDBA_TRAN.out.contigs.join(
+        ConvertToFASTA.out.fasta
     ).combine(
-        Channel.of(params.read_length, params.insert_size)
+        Channel.of(params.read_length)
+    ).combine(
+       Channel.of(params.insert_size)
     ).set { idba_mt_input }
     
     IDBA_MT( idba_mt_input )

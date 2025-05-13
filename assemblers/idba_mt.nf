@@ -21,6 +21,8 @@ workflow IdbaUdMTPipeline {
 process ConvertToFASTA {
     tag "$sample"
 
+    publishDir "${params.result_dir}/assembler/${sample}", mode: 'copy'
+
     cpus = 1
     memory = '1G'
 
@@ -28,12 +30,19 @@ process ConvertToFASTA {
     tuple val(sample), path(left_reads), path(right_reads)
 
     output:
-    tuple val(sample), path("left_reads.fa"), path("right_reads.fa")
+    tuple val(sample), path("left_reads.fa"), path("right_reads.fa")  , emit: fasta
+    path(time_log_fl)                                                 , emit: time_log
 
     script:
+    process_name = "ConvertToFASTA"
+    time_log_fl = "${sample}_convert_to_fasta_time_log.txt"
+
     """
-    awk 'NR%4 == 1{print ">" substr(\$0, 2)} NR%4 == 2{print}' $left_reads > left_reads.fa
-    awk 'NR%4 == 1{print ">" substr(\$0, 2)} NR%4 == 2{print}' $right_reads > right_reads.fa
+    /usr/bin/time -v /homes/tlin/Projects/assembler_benchmark_pipeline/scripts/convert_to_fasta.sh $left_reads $right_reads left_reads.fa right_reads.fa \
+      2> $time_log_fl
+
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
     """
 }
 
@@ -46,17 +55,25 @@ process IDBA_MT {
     tuple val(sample), path(hard_filtered_transcripts), path(left_fasta), path(right_fasta), val(read_length), val(insert_size)
 
     output:
-    path "idba_mt_contigs.fa", emit: contigs
+    path "idba_mt_contigs.fa"                        , emit: contigs
+    path(time_log_fl)                                , emit: time_log
+
 
     script:
+    process_name = "IDBA_MT"
+    time_log_fl = "${sample}_idba_mt_fasta_time_log.txt"
+
     """
-    idba-mt \\
+    /usr/bin/time -v idba-mt \\
         -t $left_fasta \\
         -f $right_fasta \\
         -r ${read_length} \\
-        -r ${insert_size} \\
+        -i ${insert_size} \\
         -c $hard_filtered_transcripts \\
-        -O idba_mt_contigs.fa
+        -O idba_mt_contigs.fa > $time_log_fl
+    
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tProcess: \\"$sample\\"" >> $time_log_fl
     """
 }
 
