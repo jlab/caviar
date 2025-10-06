@@ -21,8 +21,6 @@ workflow IdbaUdMTPipeline {
 process ConvertToFASTA {
     tag "$sample"
 
-    publishDir "${params.result_dir}/assembler/${sample}", mode: 'copy'
-
     cpus = 1
     memory = '1G'
 
@@ -61,7 +59,7 @@ process IDBA_MT {
 
     script:
     process_name = "IDBA_MT"
-    time_log_fl = "${sample}_idba_mt_fasta_time_log.txt"
+    time_log_fl= "${sample}_idba_mt_fasta_time_log.txt"
 
     """
     /usr/bin/time -v idba-mt \\
@@ -70,7 +68,7 @@ process IDBA_MT {
         -r ${read_length} \\
         -i ${insert_size} \\
         -c $hard_filtered_transcripts \\
-        -O idba_mt_contigs.fa > $time_log_fl
+        -O idba_mt_contigs.fa 2> $time_log_fl
     
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
     echo -e "\\tProcess: \\"$sample\\"" >> $time_log_fl

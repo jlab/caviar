@@ -20,6 +20,7 @@ workflow SoapDeNovoTransPipeline {
 
 process SOAPdenovoTrans {
     tag "$sample"
+    cache false
 
     publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
@@ -37,7 +38,7 @@ process SOAPdenovoTrans {
     """
     OUTDIR=soapdenovo_trans_results
     mkdir \$OUTDIR
-    SOAPdenovo-Trans-127mer all -s $soap_config -o \${OUTDIR}/soap_denovo_trans -p ${task.cpus}
+    /usr/bin/time -v SOAPdenovo-Trans-127mer all -s $soap_config -o \${OUTDIR}/soap_denovo_trans -p ${task.cpus} 2> $time_log_fl
     mv soapdenovo_trans_results/soap_denovo_trans.contig soap-denovo-trans_contigs.fa
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl

@@ -2,7 +2,6 @@ process DBG {
     tag "$sample"
     label 'process_high_memory'
 
-    conda "${moduleDir}/environment.yml"
     //TODO add conda environment
     //TODO add podman container
     publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
@@ -28,7 +27,7 @@ process DBG {
 
     //TODO Should -g and kmer be a parameter for config in args?
     """
-    /usr/bin/time -v /homes/tlin/software/bin/dbg -i ${reads_left} ${reads_right}  \\
+    /usr/bin/time -v /homes/tlin/software/bin/dbg -i --r1 ${reads_left} --r2 ${reads_right}  \\
         -t test test \\
         -r ${task.memory.toGiga()} \\
         -g \\

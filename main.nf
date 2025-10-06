@@ -54,17 +54,23 @@ workflow ASSEMBLE {
     triplet
 
     main:
-    
-    DBG(triplet)
-    megahit(triplet)
     IdbaPipeline(triplet) //idba_ud doesnt work
-    OasesPipeline(triplet)
     SoapDeNovoTransPipeline(triplet)
-    
 
+    //strand specific only
+
+
+"""
+    // not strand specific
+    megahit(triplet)
+    OasesPipeline(triplet)
     rnaspades(triplet)
-    TransABySS(triplet)
     Trinity(triplet)
+    DBG(triplet)
+"""
+
+
+    //TransABySS(triplet)
 
     //TransLiG(triplet)
     //ingapCdgPipeline(triplet)

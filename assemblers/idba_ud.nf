@@ -23,21 +23,13 @@ process UnzipReads {
 
     output:
     tuple val(sample), path("left_reads.fq"), path("right_reads.fq"), emit: unzipped
-    path(time_log_fl)                                               , emit: time_log
 
 
     script:
-    process_name = "UnzipReads"
-    time_log_fl = "${sample}_unzip_reads_time_log.txt"
 
     """
-    /usr/bin/time -v bash -c '
-    gunzip -c "\$0" > left_reads.fq
-    gunzip -c "\$1" > right_reads.fq
-    ' bash $reads_left $reads_right 2> $time_log_fl
-
-    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
-    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
+    /usr/bin/time -v gunzip -c $reads_left > left_reads.fq
+    /usr/bin/time -v gunzip -c $reads_right > right_reads.fq
     """
 }
 

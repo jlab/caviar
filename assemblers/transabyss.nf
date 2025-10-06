@@ -1,7 +1,8 @@
 process TransABySS {
-    //conda '/vol/jlab/tlin/software/condaenvs/transabyss_dependencies'
-    container 'quay.io/biocontainers/transabyss:2.0.1--pyh864c0ab_7'
+    //container 'quay.io/biocontainers/transabyss:1.5.5--1'
     tag "$sample"
+    cache false
+
 
     publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
@@ -19,7 +20,10 @@ process TransABySS {
     process_name = "TransABySS"
     time_log_fl = "${sample}_transabyss_time_log.txt"
     """
-    transabyss --pe $reads_right $reads_left --threads ${task.cpus} --outdir transabyss_results ${args}
+    source /homes/tlin/miniconda3/etc/profile.d/conda.sh
+    conda activate transabysstest
+    
+    /usr/bin/time -v  transabyss --pe $reads_left $reads_right --threads ${task.cpus} --outdir transabyss_results ${args}  > $time_log_fl
     mv transabyss_results/transabyss-final.fa transabyss_contigs.fa
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl

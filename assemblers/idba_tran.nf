@@ -32,7 +32,7 @@ process IDBA_TRAN {
     time_log_fl = "${sample}_ibda_tran_time_log.txt"
 
     """
-    idba_tran -l $merged_fa -o idba_tran_results --num_threads ${task.cpus} 2> $time_log_fl
+    /usr/bin/time -v idba_tran -l $merged_fa -o idba_tran_results --num_threads ${task.cpus} 2> $time_log_fl
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
     echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
