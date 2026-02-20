@@ -36,7 +36,7 @@ process ConvertToFASTA {
     time_log_fl = "${sample}_convert_to_fasta_time_log.txt"
 
     """
-    /usr/bin/time -v /homes/tlin/Projects/assembler_benchmark_pipeline/scripts/convert_to_fasta.sh $left_reads $right_reads left_reads.fa right_reads.fa \
+    /usr/bin/time -v convert_to_fasta.sh $left_reads $right_reads left_reads.fa right_reads.fa \
       2> $time_log_fl
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl

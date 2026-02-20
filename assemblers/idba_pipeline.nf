@@ -7,14 +7,13 @@ workflow IdbaPipeline {
     triplet
 
     main:
-
     UnzipReads( triplet )
     MergeAndConvert( UnzipReads.out.unzipped )
-    //IDBA_UD( MergeAndConvert.out )
+    IDBA_UD( MergeAndConvert.out.merged )
     IDBA_TRAN(  MergeAndConvert.out.merged )
 
     ConvertToFASTA( UnzipReads.out.unzipped )
-    IDBA_TRAN.out.contigs.join(
+    IDBA_UD.out.contigs.join(
         ConvertToFASTA.out.fasta
     ).combine(
         Channel.of(params.read_length)

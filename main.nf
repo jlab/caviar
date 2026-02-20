@@ -12,40 +12,16 @@ include { SoapDeNovoTransPipeline } from './assemblers/soapdenovotrans.nf'
 include { TransABySS } from './assemblers/transabyss.nf' 
 include { TransLiG } from './assemblers/translig.nf'
 include { Trinity } from './assemblers/trinity.nf' 
-include { CollectContigsForSample } from './functions/streamlining.nf'
-include { TrimmomaticPE } from './preprocess/trimmomatic.nf'
-include { Bowtie2Align; Bowtie2Build } from './preprocess/bowtie.nf'
 include { SORTMERNA } from './preprocess/sortmerna.nf' 
-include { PLOT_ALIGNMENT_RATES } from './functions/plotting.nf'
 include { OasesPipeline } from './assemblers/oases.nf'
 include { DBG } from './assemblers/dbg.nf'
 
-//sample_dir = '/vol/jlab/Analyses/metaTall/tmp/demultiplex/'
-//sample_dir = '/vol/jlab/tlin/all_project/fastq/subset_rna/'
-//sample_dir = '/homes/tlin/Projects/jlab-mtpreprocess/result/sortmerna/'
 sample_dir = params.sample_dir
-reference = Channel.fromPath('/vol/jlab/tlin/all_project/references/ncbi_GRCH38/GRCh38_latest_genomic.fna')
-rrna_databse = Channel.fromPath('/vol/jlab/tlin/all_project/references/no_backup/rrna_db/smr_v4.3_default_db.fasta')
-print(sample_dir)
-print(params.pattern)
+
+
 workflow {
     ch = Channel.fromFilePairs("${sample_dir}/${params.pattern}").map{tuple -> [tuple[0], tuple[1].sort()].flatten()} //for debugging: .view()
     ASSEMBLE(ch)
-
-    """
-    //works
-    Bowtie2Build(reference)
-    Bowtie2Align(ch, Bowtie2Build.out)
-    Bowtie2Align.out.view().map { s, file -> 
-        def content = file.text.trim()
-        tuple(s, content)
-    }.collect().set { alignment_rates_bowie }
-    PLOT_ALIGNMENT_RATES(alignme   Otherwise, names are kept untouched in the given output directory.
-nt_rates_bowie)
-    """
- 
-    //works
-    //TrimmomaticPE(ch)
 }
 
 
@@ -56,21 +32,12 @@ workflow ASSEMBLE {
     main:
     IdbaPipeline(triplet) //idba_ud doesnt work
     SoapDeNovoTransPipeline(triplet)
-
-    //strand specific only
-
-
-"""
-    // not strand specific
     megahit(triplet)
     OasesPipeline(triplet)
     rnaspades(triplet)
     Trinity(triplet)
     DBG(triplet)
-"""
-
-
-    //TransABySS(triplet)
+    TransABySS(triplet)
 
     //TransLiG(triplet)
     //ingapCdgPipeline(triplet)

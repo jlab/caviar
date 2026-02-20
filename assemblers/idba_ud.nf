@@ -60,20 +60,34 @@ process MergeAndConvert {
 }
 
 process IDBA_UD {
+    tag "$sample"
+
     publishDir "${params.result_dir}/assembler/$sample", mode: 'copy'
 
     input:
     tuple val(sample), path(merged_fa)
 
     output:
-    tuple val(sample), path("idba_ud_contigs.fa")
+    tuple val(sample), path("idba_ud_contigs.fa"), emit: contigs
+    path(time_log_fl)                                , emit: time_log
+
 
     script:
+    process_name = "IDBA_UD"
+    time_log_fl = "${sample}_ibda_ud_time_log.txt"
+
     """
-    idba_ud \\
+    source /homes/tlin/miniconda3/etc/profile.d/conda.sh
+    conda activate idba_ud
+
+    /usr/bin/time -v idba_ud \\
         -l $merged_fa \\
         -o idba_ud \\
         --num_threads ${task.cpus}
+    
+    echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
+    echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
+    
     mv idba_ud/contig.fa idba_ud_contigs.fa
     """
 }
