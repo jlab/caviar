@@ -27,7 +27,7 @@ process DBG {
 
     //TODO Should -g and kmer be a parameter for config in args?
     """
-    /usr/bin/time -v /homes/tlin/software/bin/dbg -i --r1 ${reads_left} --r2 ${reads_right}  \\
+    /usr/bin/time -v dbg -i --r1 ${reads_left} --r2 ${reads_right}  \\
         -t test test \\
         -r ${task.memory.toGiga()} \\
         -g \\

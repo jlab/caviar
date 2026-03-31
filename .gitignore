@@ -11,3 +11,5 @@ report-*.html
 
 .vscode/
 RScripts/.Rhistory
+
+nextflow.config

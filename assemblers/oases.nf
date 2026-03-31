@@ -50,7 +50,7 @@ process Velvetg {
     time_log_fl = "${sample}_velvetg_time_log.txt"
 
     """
-    /usr/bin/time -v /vol/jlab/tlin/software/assemblers/oases/velvet/velvetg $assem_dir -read_trkg yes 2> $time_log_fl
+    /usr/bin/time -v velvetg $assem_dir -read_trkg yes 2> $time_log_fl
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
     echo -e "\\tEnvironment: \\"$sample\\"" >> $time_log_fl
@@ -76,7 +76,7 @@ process Oases {
     time_log_fl = "${sample}_oases_time_log.txt"
 
     """
-    /usr/bin/time -v /vol/jlab/tlin/software/assemblers/oases/oases $assem_dir 2> $time_log_fl
+    /usr/bin/time -v oases $assem_dir 2> $time_log_fl
     mv Assem/transcripts.fa oases_contigs.fa
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl

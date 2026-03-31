@@ -21,7 +21,6 @@ process Trinity {
     process_name = "Trinity"
     time_log_fl = "${sample}_trinity_time_log.txt"
     """
-    export PATH="/homes/tlin/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/homes/tlin/software/cli_links:/homes/tlin/homebrew/bin:/vol/jlab/bin:/vol/jlab/tlin/software/sratoolkit.3.1.0-ubuntu64/bin:/homes/tlin/edirect:/vol/slurm/bin:/homes/tlin/Projects/jlab-assemblertraining/bin:/vol/software/bin"
     /usr/bin/time -v Trinity --seqType fq --max_memory ${task.memory.toGiga()}G --left $reads_left --right $reads_right \
             --CPU ${task.cpus} --output trinity_out --workdir /var/tmp/trinity_tmp ${args} 2> $time_log_fl
     mv trinity_out.Trinity.fasta trinity_contigs.fa

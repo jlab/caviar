@@ -20,10 +20,10 @@ process TransABySS {
     process_name = "TransABySS"
     time_log_fl = "${sample}_transabyss_time_log.txt"
     """
-    source /homes/tlin/miniconda3/etc/profile.d/conda.sh
-    conda activate transabysstest
+    source ~/miniconda3/etc/profile.d/conda.sh
+    conda activate transabyss
     
-    /usr/bin/time -v  transabyss --pe $reads_left $reads_right --threads ${task.cpus} --outdir transabyss_results ${args}  > $time_log_fl
+    /usr/bin/time -v transabyss --pe $reads_left $reads_right --threads ${task.cpus} --outdir transabyss_results ${args}  > $time_log_fl
     mv transabyss_results/transabyss-final.fa transabyss_contigs.fa
 
     echo -e "\\tProcess: \\"$process_name\\"" >> $time_log_fl
