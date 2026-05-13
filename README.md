@@ -1,4 +1,5 @@
 # Caviar
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20157803.svg)](https://doi.org/10.5281/zenodo.20157803)
 
 ![Caviar logo](./resources/logos/caviar_logo_gray.png)
 
