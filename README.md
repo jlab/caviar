@@ -40,11 +40,17 @@ Code sources:
 https://github.com/loneknightpy/idba
 
 https://github.com/dzerbino/oases (also clone and build linked velvet version)
+
 https://github.com/voutcn/megahit
+
 https://github.com/ablab/spades
+
 https://github.com/trinityrnaseq/trinityrnaseq
+
 https://bioconda.github.io/recipes/transabyss/README.html
+
 https://github.com/aquaskyline/SOAPdenovo-Trans
+
 https://code.google.com/archive/p/hku-idba-mt/source/default/source
 
 
